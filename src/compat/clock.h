@@ -60,4 +60,32 @@ void clock_init_time_win(struct tlsdate_time *time, time_t sec,
 #define CLOCK_USEC(time)
 #define CLOCK_NSEC(time)
 
-#endif /* __linux__ _WIN32 */
+#elif __MACH__
+
+#include <time.h>
+#include <sys/time.h>
+#include <mach/clock.h>
+#include <mach/mach.h>
+
+struct tlsdate_time {
+    mach_timespec_t mts;
+};
+
+extern int clock_get_real_time_mach(struct tlsdate_time *time);
+#define clock_get_real_time(time) clock_get_real_time_mach(time)
+
+extern int clock_set_real_time_mach(const struct tlsdate_time *time);
+#define clock_set_real_time(time) clock_set_real_time_mach(time)
+
+extern void clock_init_time_mach(struct tlsdate_time *time, time_t sec,
+                                 long nsec);
+#define clock_init_time(time, sec, nsec) \
+        clock_init_time_mach(time, sec, nsec)
+
+/* Helper macros to access time values */
+#define CLOCK_SEC(time)  ((time)->mts.tv_sec)
+#define CLOCK_MSEC(time) ((time)->mts.tv_nsec / 1000000)
+#define CLOCK_USEC(time) ((time)->mts.tv_nsec / 1000)
+#define CLOCK_NSEC(time) ((time)->mts.tv_nsec)
+
+#endif /* __linux__ _WIN32 __MACH__ */

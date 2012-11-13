@@ -7,6 +7,7 @@ AC_ARG_PROGRAM
 AC_USE_SYSTEM_EXTENSIONS
 
 AM_INIT_AUTOMAKE([-Wall -Werror -Wno-portability subdir-objects foreign tar-ustar])
+AM_CONDITIONAL([OS_DARWIN], [test `uname` = Darwin])
 
 AC_PREREQ([2.63])
 
@@ -58,13 +59,14 @@ AC_CHECK_FUNCS([setresuid])
 AC_CHECK_FUNCS([gettimeofday])
 
 # Check for -lrt
-AC_CHECK_LIB([rt], [clock_gettime], [
+AS_IF(OS_DARWIN, AC_CHECK_LIB([rt], [clock_gettime], [
               RT_LIB="-lrt"
               AC_SUBST(RT_LIB)
               AC_DEFINE([HAVE_LIBRT], [1], [Have clock_gettime])
               ],[
                  AC_MSG_ERROR([Your system lacks clock_gettime])
               ])
+)
 
 # Debug and hardening flags all in one shot
 # Alwas do this at the end, otherwise you end up filtering system/other libraries

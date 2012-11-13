@@ -2,7 +2,12 @@
 
 lib_LTLIBRARIES+= src/compat/libtlsdate_compat.la
 
-src_compat_libtlsdate_compat_la_SOURCES = src/compat/clock-linux.c
+if OS_DARWIN
+  src_compat_libtlsdate_compat_la_SOURCES = src/compat/clock-mach.c
+else
+  src_compat_libtlsdate_compat_la_SOURCES = src/compat/clock-linux.c
+endif
+
 src_compat_libtlsdate_compat_la_CFLAGS = -DBUILDING_TLSDATE
 src_compat_libtlsdate_compat_la_LIBADD = @RT_LIB@
 noinst_HEADERS+= src/compat/clock.h
